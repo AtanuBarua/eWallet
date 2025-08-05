@@ -60,4 +60,57 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string|min:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => $validator->errors()->first()
+            ], 422);
+        }
+
+        try {
+            $credentials = $request->only('email', 'password');
+            $user = User::where('email', $credentials['email'])->first();
+
+            if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid credentials.',
+                ], 500);
+            }
+
+            $user->tokens()->delete();
+            $token = $user->createToken('spa-token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Login successful',
+                'data' => [
+                    'token' => $token,
+                    'user' => [
+                        'id'    => $user->id,
+                        'name'  => $user->name,
+                        'email' => $user->email,
+                    ],
+                ]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('User login failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong.',
+            ], 500);
+        }
+    }
 }
