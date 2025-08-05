@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import api from '../../../lib/axiosClient';
+import Cookies from 'js-cookie';
 
 export default function Login() {
   const router = useRouter();
@@ -32,6 +33,11 @@ export default function Login() {
       });
 
       if (response.status === 200) {
+        Cookies.set('auth_token', response.data.data.token, {
+          secure: true,
+          sameSite: 'lax',
+          expires: 1, // days
+        });
         router.push('/');
       }
     } catch (err) {
