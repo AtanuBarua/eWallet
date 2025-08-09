@@ -38,6 +38,8 @@ export default function Login() {
           sameSite: 'lax',
           expires: 1, // days
         });
+        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        localStorage.setItem('wallet', JSON.stringify(response.data.data.wallet));
         router.push('/');
       }
     } catch (err) {

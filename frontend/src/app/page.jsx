@@ -18,7 +18,12 @@ export default function DashboardPage() {
     { title: 'Settings', emoji: '⚙️', color: 'bg-info' },
   ];
 
-  const userBalance = 3450.75;
+  const walletString = localStorage.getItem('wallet');
+  let wallet = null;
+  
+  if (walletString) {
+    const wallet = JSON.parse(walletString);
+  }
 
   const dropdownRef = useRef(null);
 
@@ -79,7 +84,7 @@ export default function DashboardPage() {
 
           <div className="flex items-center space-x-4">
             <div className="font-semibold">
-              Balance: <span className="text-primary">${userBalance.toFixed(2)}</span>
+              Balance: <span className="text-primary">{wallet ? `$${wallet.balance}` : '$0.00'}</span>
             </div>
 
             <div className="relative" ref={dropdownRef}>
