@@ -51,4 +51,9 @@ class User extends Authenticatable
             'transaction_pin' => 'hashed',
         ];
     }
+
+    public function wallet()
+    {
+        return $this->hasMany(Wallet::class);
+    }
 }
